@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BeatLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Unbounded:wght@300;400;700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="wordmark">BL</div>
+      <button class="nav-close" id="navClose">✕</button>
+    </div>
+
+    <ul class="nav-list">
+      <li><button class="nav-btn active" data-page="dashboard">Dashboard</button></li>
+      <li><button class="nav-btn" data-page="beats">Beats <span class="nav-count" id="cntBeats">0</span></button></li>
+      <li><button class="nav-btn" data-page="samples">Samples <span class="nav-count" id="cntSamples">0</span></button></li>
+      <li><button class="nav-btn" data-page="songs">Songs <span class="nav-count" id="cntSongs">0</span></button></li>
+    </ul>
+
+    <div class="sidebar-foot">
+      <button class="theme-btn" id="themeBtn">
+        <span class="theme-label" id="themeLabel">Light</span>
+      </button>
+      <div class="version">v2.0 · local</div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+
+    <!-- mobile bar -->
+    <div class="topbar">
+      <button class="hamburger" id="hamburger">☰</button>
+      <span class="topbar-title" id="topbarTitle">Dashboard</span>
+    </div>
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <section class="page active" id="page-dashboard">
+      <header class="ph">
+        <h1 class="pt">Dashboard</h1>
+        <span class="pclock" id="clock"></span>
+      </header>
+
+      <div class="stats-row" id="statsRow">
+        <div class="stat" data-nav="beats"><span class="sn" id="s-beats">0</span><span class="sl">Beats</span></div>
+        <div class="stat" data-nav="beats"><span class="sn" id="s-fin">0</span><span class="sl">Finished</span></div>
+        <div class="stat" data-nav="samples"><span class="sn" id="s-samples">0</span><span class="sl">Samples</span></div>
+        <div class="stat" data-nav="samples"><span class="sn" id="s-used">0</span><span class="sl">Used</span></div>
+        <div class="stat" data-nav="samples"><span class="sn" id="s-unused">0</span><span class="sl">Unused</span></div>
+        <div class="stat" data-nav="songs"><span class="sn" id="s-songs">0</span><span class="sl">Songs</span></div>
+        <div class="stat" data-nav="beats"><span class="sn" id="s-eps">0</span><span class="sl">Projects</span></div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-panel">
+          <div class="panel-hd">
+            <span>Recent Beats</span>
+            <button class="link" data-nav="beats">all →</button>
+          </div>
+          <div id="recentBeats" class="row-list"></div>
+        </div>
+        <div class="dash-panel">
+          <div class="panel-hd"><span>Status</span></div>
+          <div id="statusBars" class="status-bars"></div>
+        </div>
+        <div class="dash-panel">
+          <div class="panel-hd">
+            <span>Recent Songs</span>
+            <button class="link" data-nav="songs">all →</button>
+          </div>
+          <div id="recentSongs" class="row-list"></div>
+        </div>
+        <div class="dash-panel">
+          <div class="panel-hd">
+            <span>Projects (EPs/Albums)</span>
+            <button class="link" data-nav="beats">all →</button>
+          </div>
+          <div id="recentProjects" class="row-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ BEATS ═══ -->
+    <section class="page" id="page-beats">
+      <header class="ph">
+        <h1 class="pt">Beats</h1>
+        <div class="ph-actions">
+          <button class="btn-outline" id="openProjectModal">+ Project</button>
+          <button class="btn-solid" id="openBeatModal">+ Beat</button>
+        </div>
+      </header>
+
+      <!-- Projects strip -->
+      <div class="projects-strip" id="projectsStrip"></div>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <input class="search" type="text" id="beatSearch" placeholder="search beats…"/>
+        </div>
+        <select class="sel" id="fStatus"><option value="">Status</option><option>Idea</option><option>In Progress</option><option>Mixing</option><option>Finished</option></select>
+        <select class="sel" id="fGenre"><option value="">Genre</option></select>
+        <select class="sel" id="fBpm"><option value="">BPM</option><option value="0-80">≤80</option><option value="80-100">80–100</option><option value="100-140">100–140</option><option value="140-999">140+</option></select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tbl" id="beatTable">
+          <thead>
+            <tr>
+              <th>Name</th><th>BPM</th><th>Key</th><th>Genre</th><th>Status</th><th>Project</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="beatTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ SAMPLES ═══ -->
+    <section class="page" id="page-samples">
+      <header class="ph">
+        <h1 class="pt">Samples</h1>
+        <button class="btn-solid" id="openSampleModal">+ Sample</button>
+      </header>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <input class="search" type="text" id="sampleSearch" placeholder="search samples…"/>
+        </div>
+        <select class="sel" id="fCat"><option value="">Category</option><option>Drum</option><option>Melody</option><option>Vocal</option><option>FX</option></select>
+        <select class="sel" id="fUsage"><option value="">Usage</option><option value="used">Used</option><option value="unused">Unused</option><option value="fav">Favorites</option></select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tbl" id="sampleTable">
+          <thead>
+            <tr>
+              <th>Name</th><th>Cat</th><th>BPM</th><th>Key</th><th>Status</th><th>Audio</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="sampleTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ SONGS ═══ -->
+    <section class="page" id="page-songs">
+      <header class="ph">
+        <h1 class="pt">Songs</h1>
+        <button class="btn-solid" id="openSongModal">+ Song</button>
+      </header>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <input class="search" type="text" id="songSearch" placeholder="search songs…"/>
+        </div>
+        <select class="sel" id="fSongProject"><option value="">All Projects</option></select>
+        <select class="sel" id="fSongStatus"><option value="">Status</option><option>Demo</option><option>Final</option><option>Released</option></select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tbl" id="songTable">
+          <thead>
+            <tr>
+              <th>Title</th><th>Artist</th><th>Project</th><th>Status</th><th>Duration</th><th>Audio</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="songTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Beat Modal -->
+<div class="overlay" id="beatModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <span id="beatModalLabel">New Beat</span>
+      <button class="close-btn" data-close="beatModal">✕</button>
+    </div>
+    <div class="modal-bd">
+      <input type="hidden" id="beatId"/>
+      <div class="fg-row">
+        <div class="fg"><label>Name *</label><input class="fi" type="text" id="beatName" placeholder="Untitled Beat"/></div>
+        <div class="fg"><label>BPM</label><input class="fi" type="number" id="beatBpm" placeholder="140" min="40" max="300"/></div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Key</label>
+          <select class="fi" id="beatKey">
+            <option value="">—</option>
+            <option>C Major</option><option>C Minor</option><option>C# Major</option><option>C# Minor</option>
+            <option>D Major</option><option>D Minor</option><option>D# Major</option><option>D# Minor</option>
+            <option>E Major</option><option>E Minor</option><option>F Major</option><option>F Minor</option>
+            <option>F# Major</option><option>F# Minor</option><option>G Major</option><option>G Minor</option>
+            <option>G# Major</option><option>G# Minor</option><option>A Major</option><option>A Minor</option>
+            <option>A# Major</option><option>A# Minor</option><option>B Major</option><option>B Minor</option>
+          </select>
+        </div>
+        <div class="fg"><label>Status</label>
+          <select class="fi" id="beatStatus">
+            <option>Idea</option><option>In Progress</option><option>Mixing</option><option>Finished</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Genre</label><input class="fi" type="text" id="beatGenre" placeholder="Trap, Drill…"/></div>
+        <div class="fg"><label>Reference</label><input class="fi" type="text" id="beatArtist" placeholder="Metro Boomin…"/></div>
+      </div>
+      <div class="fg"><label>Project (EP/Album)</label>
+        <select class="fi" id="beatProject"><option value="">None</option></select>
+      </div>
+      <div class="fg"><label>Tags</label><input class="fi" type="text" id="beatTags" placeholder="dark, 808, melodic"/></div>
+      <div class="fg"><label>Notes</label><textarea class="fi fi-ta" id="beatNotes" placeholder="Reference ideas…"></textarea></div>
+
+      <div class="fg" id="sampleLinkSection" style="display:none">
+        <label>Linked Samples <span class="hint">(auto-marks as used)</span></label>
+        <div id="sampleLinkList" class="check-list"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-outline" data-close="beatModal">Cancel</button>
+      <button class="btn-solid" id="saveBeat">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Project Modal -->
+<div class="overlay" id="projectModal">
+  <div class="modal modal-sm">
+    <div class="modal-hd">
+      <span id="projectModalLabel">New Project</span>
+      <button class="close-btn" data-close="projectModal">✕</button>
+    </div>
+    <div class="modal-bd">
+      <input type="hidden" id="projectId"/>
+      <div class="fg"><label>Title *</label><input class="fi" type="text" id="projectTitle" placeholder="My EP"/></div>
+      <div class="fg-row">
+        <div class="fg"><label>Type</label>
+          <select class="fi" id="projectType">
+            <option>EP</option><option>Album</option><option>Mixtape</option><option>Single</option>
+          </select>
+        </div>
+        <div class="fg"><label>Year</label><input class="fi" type="number" id="projectYear" placeholder="2025" min="2000" max="2100"/></div>
+      </div>
+      <div class="fg"><label>Notes</label><textarea class="fi fi-ta" id="projectNotes" placeholder="Concept, mood, direction…"></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-outline" data-close="projectModal">Cancel</button>
+      <button class="btn-solid" id="saveProject">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sample Modal -->
+<div class="overlay" id="sampleModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <span id="sampleModalLabel">New Sample</span>
+      <button class="close-btn" data-close="sampleModal">✕</button>
+    </div>
+    <div class="modal-bd">
+      <input type="hidden" id="sampleId"/>
+      <div class="fg-row">
+        <div class="fg"><label>Name *</label><input class="fi" type="text" id="sampleName" placeholder="Hard 808 Loop"/></div>
+        <div class="fg"><label>Category</label>
+          <select class="fi" id="sampleCat">
+            <option>Drum</option><option>Melody</option><option>Vocal</option><option>FX</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>BPM</label><input class="fi" type="number" id="sampleBpm" placeholder="140"/></div>
+        <div class="fg"><label>Key</label>
+          <select class="fi" id="sampleKey">
+            <option value="">—</option>
+            <option>C Major</option><option>C Minor</option><option>C# Major</option><option>C# Minor</option>
+            <option>D Major</option><option>D Minor</option><option>Eb Major</option><option>Eb Minor</option>
+            <option>E Major</option><option>E Minor</option><option>F Major</option><option>F Minor</option>
+            <option>F# Major</option><option>F# Minor</option><option>G Major</option><option>G Minor</option>
+            <option>Ab Major</option><option>Ab Minor</option><option>A Major</option><option>A Minor</option>
+            <option>Bb Major</option><option>Bb Minor</option><option>B Major</option><option>B Minor</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Tags</label><input class="fi" type="text" id="sampleTags" placeholder="808, sub, trap"/></div>
+      <div class="fg">
+        <label>Audio File</label>
+        <div class="drop-zone" id="sampleDrop">
+          <span>Drop audio or <label class="drop-label" for="sampleFile">browse</label></span>
+          <input type="file" id="sampleFile" accept="audio/*" style="display:none"/>
+        </div>
+        <div class="file-chip" id="sampleFileChip" style="display:none">
+          <span id="sampleFileName"></span>
+          <button class="chip-rm" id="sampleFileRm">✕</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-outline" data-close="sampleModal">Cancel</button>
+      <button class="btn-solid" id="saveSample">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Song Modal -->
+<div class="overlay" id="songModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <span id="songModalLabel">Upload Song</span>
+      <button class="close-btn" data-close="songModal">✕</button>
+    </div>
+    <div class="modal-bd">
+      <input type="hidden" id="songId"/>
+      <div class="fg-row">
+        <div class="fg"><label>Title *</label><input class="fi" type="text" id="songTitle" placeholder="Track Name"/></div>
+        <div class="fg"><label>Artist</label><input class="fi" type="text" id="songArtist" placeholder="Your name / feat."/></div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Project</label>
+          <select class="fi" id="songProject"><option value="">None</option></select>
+        </div>
+        <div class="fg"><label>Status</label>
+          <select class="fi" id="songStatus">
+            <option>Demo</option><option>Final</option><option>Released</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Notes</label><textarea class="fi fi-ta" id="songNotes" placeholder="Mix notes, credits…"></textarea></div>
+      <div class="fg">
+        <label>Audio File (MP3, WAV, FLAC…)</label>
+        <div class="drop-zone" id="songDrop">
+          <span>Drop song or <label class="drop-label" for="songFile">browse</label></span>
+          <input type="file" id="songFile" accept="audio/*" style="display:none"/>
+        </div>
+        <div class="file-chip" id="songFileChip" style="display:none">
+          <span id="songFileName"></span>
+          <button class="chip-rm" id="songFileRm">✕</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-outline" data-close="songModal">Cancel</button>
+      <button class="btn-solid" id="saveSong">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div class="overlay" id="confirmModal">
+  <div class="modal modal-xs">
+    <div class="modal-hd"><span>Delete?</span></div>
+    <div class="modal-bd"><p class="confirm-msg" id="confirmMsg">This cannot be undone.</p></div>
+    <div class="modal-ft">
+      <button class="btn-outline" id="confirmCancel">Cancel</button>
+      <button class="btn-danger" id="confirmOk">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Global audio player bar -->
+<div class="player-bar" id="playerBar" style="display:none">
+  <div class="player-info">
+    <span class="player-name" id="playerName">—</span>
+    <span class="player-sub" id="playerSub"></span>
+  </div>
+  <div class="player-controls">
+    <button class="p-btn" id="pPlayPause">▶</button>
+    <input class="p-seek" type="range" id="pSeek" min="0" max="100" value="0" step="0.1"/>
+    <span class="p-time" id="pTime">0:00</span>
+    <button class="p-btn p-close" id="pClose">✕</button>
+  </div>
+</div>
+
+<div class="toast-rack" id="toastRack"></div>
+
+<script src="js/storage.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/player.js"></script>
+<script src="js/beats.js"></script>
+<script src="js/samples.js"></script>
+<script src="js/songs.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
